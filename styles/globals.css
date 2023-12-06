@@ -1,0 +1,9 @@
+@import url('https://fonts.cdnfonts.com/css/campton');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: 'Campton', sans-serif;
+  }
+  
