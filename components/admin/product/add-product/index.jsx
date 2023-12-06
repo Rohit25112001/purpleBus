@@ -78,32 +78,33 @@ const addProduct = ()=>{
                 </Form>
             </Drawer>
 
-            {/*header where search and add product button define*/}
-            <div className="flex px-4 justify-between items-center border-b border-zinc-400">
+            <div>
+                    {/*header where search and add product button define*/}
+                    <div className="bg-white flex px-4 justify-between items-center border-b border-zinc-400">
 
-                <button onClick={AddproductButton} className="bg-blue-500 my-2 text-white p-2 rounded flex items-center gap-1 font-bold">
-                    <i class='bx bx-plus text-xl'/> 
-                    Add Product
-                </button>
+                        <button onClick={AddproductButton} className="bg-blue-500 my-2 text-white p-2 rounded flex items-center gap-1 font-bold">
+                            <i class='bx bx-plus text-xl'/> 
+                            Add Product
+                        </button>
 
-                <div>
-                    <Form className="flex items-center gap-2" >
-                        
-                        <Dropdown trigger={['click']}>
-                            <Button>
-                                 'Select an option'
-                            </Button>
-                        </Dropdown>
-                        <Input type="text" placeholder="Search product" className="py-2"/>
-                        <button className="py-2 px-3 text-white bg-blue-500 rounded font-semibold">Search</button>
-                    </Form>
-                </div>
-            </div>
+                        <div>
+                            <Form className="flex items-center gap-2" >
+                                
+                                <Dropdown trigger={['click']}>
+                                    <Button>
+                                        'Select an option'
+                                    </Button>
+                                </Dropdown>
+                                <Input type="text" placeholder="Search product" className="py-2"/>
+                                <button className="py-2 px-3 text-white bg-blue-500 rounded font-semibold">Search</button>
+                            </Form>
+                        </div>
+                    </div>
 
-            <div className="p-2 grid grid-cols-4 gap-6 items-center">
-                {/*/check is data added or not*/}
-                <h1>Testing</h1>
-
+                    {/*/check is data added or not*/}
+                    <div className="bg-white mt-2 h-[420px] p-2 overflow-y-scroll">
+                        <h1>hello</h1>
+                    </div>
             </div>
         </Admin>
     );

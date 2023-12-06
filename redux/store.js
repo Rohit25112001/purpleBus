@@ -1,4 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-
-const store = configureStore();
+import AdminFormButton from '@/redux/slice/adminForm';
+const store = configureStore({
+    reducer:{
+        AdminFormButton
+    }
+});
 export default store;
