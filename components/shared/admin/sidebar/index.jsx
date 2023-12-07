@@ -19,29 +19,86 @@ const data=[
     },
     {
         id:3,
-        subheading:'GENERAL',
+        subheading:'BUS CONTROL',
         List:[
             {
                 id:4,
-                label:'Product',
-                icon:'shopping-bag',
-                dropdown:true,
-                dropdownMenu:[
-                    {
-                        id:5,
-                        label:"Add Product",
-                        link:"admin/product/add-product",
-                        icon:"add-to-queue"
-                    },
-                    {
-                        id:6,
-                        label:"Show Product",
-                        link:"admin/product/show-product",
-                        icon:"show"
-                    }
-                ]
+                label:'Add Bus',
+                icon:'bus',
+                link:"admin/product/add-product",
+            },
+            {
+                id:5,
+                label:"Show Bus",
+                link:"admin/product/add-product",
+                icon:"add-to-queue"
+            },
+            {
+                id:5,
+                label:"Add Trip",
+                link:"admin/product/add-product",
+                icon:"trip",
+                iconCheck:true
             }
         ]
+    },
+    {
+        id:9,
+        subheading:'ADD ROUTE',
+        List:[
+            {
+                id:2,
+                label:'Add Place',
+                icon:'home',
+                link:'/admin/dashboard',
+                dropdown:false
+            }
+        ]
+        
+    },
+    {
+        id:6,
+        subheading:'ACTIVITY',
+        List:[
+            {
+                id:4,
+                label:'Enquiries',
+                icon:'megaphone',
+                link:"admin/product/add-product",
+            },
+            {
+                id:5,
+                label:"Payments",
+                link:"admin/product/add-product",
+                icon:"wallet"
+            },
+            {
+                id:5,
+                label:"Track Bus",
+                link:"admin/product/add-product",
+                icon:'location-plus'
+            },
+            {
+                id:6,
+                label:"Reports",
+                link:"admin/product/add-product",
+                icon:"file"
+            }
+        ]
+        
+    },
+    {
+        id:7,
+        subheading:'SETTING',
+        List:[
+            {
+                id:8,
+                label:'Setting',
+                icon:'cog',
+                link:"admin/product/add-product",
+            }
+        ]
+        
     }
 ];
 
@@ -64,11 +121,15 @@ const Sidebar = ()=>{
                     <>
                         {
                             //menu without dropdown
-                                menuList.link && <span  name={menuList.label} onClick={()=>checkActivemenu(menuList.label)}  className={` ${menuList.label==='Dashboard'?'text-[#03A9F5]':null} 
+                                menuList.link && <span  name={menuList.label} onClick={()=>checkActivemenu(menuList.label)}  
+                                className={`cursor-pointer ${menuList.label==='Dashboard'?'text-[#03A9F5]':null} 
                                 rounded flex items-center gap-2
                                     mb-1 rounded-[8px] hover:text-[#03A9F5] 
                                     text-[#8499A8] px-4 py-2 text-[13px]`} key={index}>
-                                        <i name={menuList.label} className={`bx bx-${menuList.icon} text-[14px]`}/>
+                                        {menuList.iconCheck ? 
+                                        <i name={menuList.label} className={`bx bx-${menuList.icon} text-[14px]`}/> 
+                                        : 
+                                        <i name={menuList.label} className={`bx bxs-${menuList.icon} text-[14px]`}/>}
                                         {menuList.label}
                                     </span>
                         }
@@ -111,9 +172,10 @@ const Sidebar = ()=>{
                         <img width={160} src={"/image/brand.png"} />
                     </div> */}
 
-                    <div className='flex flex-col px-2'>
+                    <div className='flex flex-col px-2  h-[485px] overflow-y-scroll'>
                         <List
                             itemLayout="horizontal"
+                            className=""
                         >
                             {
                                 data.map((items,index)=><MenuList data={items} key={index}/>)
