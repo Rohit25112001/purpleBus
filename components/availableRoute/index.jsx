@@ -1,5 +1,5 @@
 import HomeLayout from "../shared/layout/homeLayout";
-import { Button, Checkbox, Popover, Image } from 'antd';
+import { Button, Checkbox, Popover, Image, Form, Input } from 'antd';
 import { useEffect, useState } from "react";
 
 const FilterMenu = [
@@ -175,28 +175,7 @@ const AvilableRoute = () => {
         )
     }
 
-    //seat icon
-        const SVGICON = ({maxHeight}) =>{
-        return(
-            <svg style={{ maxHeight: maxHeight }} version="1.0" xmlns="http://www.w3.org/2000/svg" width="33.000000pt" height="20.000000pt" viewBox="0 0 33.000000 35.000000" preserveAspectRatio="xMidYMid meet">
-            <g transform="translate(0.000000,35.000000) scale(0.100000,-0.100000)" fill="none" stroke="none">
-              <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="15" fill="#000">
-                New Text
-              </text>
-              <path
-                d="M120 305 c0 -11 -11 -15 -38 -15 -64 0 -82 -26 -82 -120 0 -94 18 -120 82 -120 27 0 38 -4 38 -15 0 -12 18 -15 100 -15 l100 0 0 150 0 150 -100 0 c-82 0 -100 -3 -100 -15z m3 -45 c4 -17 14 -20 66 -20 l61 0 0 -70 0 -70 -61 0 c-52 0 -62 -3 -66 -20 -7 -27 -66 -27 -93 0 -16 16 -20 33 -20 90 0 83 18 110 74 110 25 0 35 -5 39 -20z"
-                style={{ stroke: "#000", fill: "#fff", strokeWidth: 5 }}
-              />
-              
-              <text x="380%" y="-380%" transform="scale(-1, 1) rotate(180)" textAnchor="middle" fontSize="100" fill="#000">
-                27
-              </text>
-            </g>
-          </svg>
-
-
-            )
-        }
+    
 
     const [selectedBus, setSelectedBus] = useState(null); // select bus
     const SelectedBus =(e)=>{
@@ -211,6 +190,49 @@ const AvilableRoute = () => {
       const clearSelectedBus = () => {
         setSelectedBus(null);
       };
+
+
+      //seat icon
+      const [colorSeat,setColorSeat] = useState({
+        selectedSeat:[],
+        seatNo:0
+      });
+    //   const [selected,setColorSeat] = useState(0);
+      const SVGICON = ({data,onClick}) =>{
+      return(
+          <Popover content = {<div>
+              <h1>Seat No - {data}</h1>
+              <h1>Base Fare - 2000</h1>
+              <h1>GST - 100</h1>
+              <h1>Seat Rate - 2100</h1>
+              <h1>Seat Status - Available</h1>
+          </div> } 
+          title="Seat Information">
+
+              <svg style={{cursor:'pointer'}} onClick={()=>onClick(data)} version="1.0" xmlns="http://www.w3.org/2000/svg" width="33.000000pt" height="22.000000pt" viewBox="0 0 33.000000 35.000000" preserveAspectRatio="xMidYMid meet">
+              <g transform="translate(0.000000,35.000000) scale(0.100000,-0.100000)" fill="none" stroke="none">
+              <path
+                  d="M120 305 c0 -11 -11 -15 -38 -15 -64 0 -82 -26 -82 -120 0 -94 18 -120 82 -120 27 0 38 -4 38 -15 0 -12 18 -15 100 -15 l100 0 0 150 0 150 -100 0 c-82 0 -100 -3 -100 -15z m3 -45 c4 -17 14 -20 66 -20 l61 0 0 -70 0 -70 -61 0 c-52 0 -62 -3 -66 -20 -7 -27 -66 -27 -93 0 -16 16 -20 33 -20 90 0 83 18 110 74 110 25 0 35 -5 39 -20z"
+                  style={{ stroke: "#000", fill: `${colorSeat.seatNo == data ? "green":'#fff'}`, strokeWidth: 5 }}
+              />
+              
+              <text x="380%" y="-380%" transform="scale(-1, 1) rotate(180)" textAnchor="middle" fontSize="100" fill="#000">
+                  {data}
+              </text>
+              </g>
+          </svg>
+        </Popover>
+
+
+          )
+      }
+
+      const selectSeats = (e) =>{
+          setColorSeat({
+            seatNo:e
+          })
+          console.log(e);
+      }
       
       //selected bus component
       const SelectedSeatData = () =>{
@@ -259,15 +281,25 @@ const AvilableRoute = () => {
 
                     <Button className="mt-12 bg-[#FCCA00]">Amenities</Button>
                     <h1 className="text-[16px] text-[#444444] font-bold">LOWER DECK</h1>
-                    <div className="border border-zinc-500 w-[90%] h-[300px] grid grid-cols-12">
+                    <div className="border border-zinc-500 w-[90%] h-[200px] grid grid-cols-12 p-2">
                         <div className="col-span-1">
                             <Image src="/iconsteering.png"/>
                         </div>
                         <div className="col-span-11">
-                            <div className="h-[40px] bg-red-500 ">
+                        
+                            <div className=" flex flex-wrap flex-col justify-center  h-[60px] w-[300px] ">
+                                {
+                                    Array(14).fill().map((item,index)=> 
+                                        <SVGICON  data={index+1} onClick={selectSeats}/>
+                                    )
+                                }
+                            </div>
+
+
+                            <div className="pl-10 my-8 flex flex-wrap flex-col justify-center  h-[60px] w-[300px] ">
                             {
-                                Array(10).fill().map((item,index)=> 
-                                index<=5 ? <SVGICON maxHeight="40px"/> :'hello'
+                                Array(12).fill().map((item,index)=> 
+                                    <SVGICON data={index+15} onClick={selectSeats}/>
                                 )
                             }
                             </div>
@@ -277,7 +309,42 @@ const AvilableRoute = () => {
                 </div>
 
                 {/*contact from*/}
-                <div className="col-span-3 bg-blue-500">rjb</div>
+                <div className="col-span-3 py-7 px-3">
+                    <div>
+                        <Image src="/form-top.png"/>
+                    </div>
+                    <div className="border border-zinc-500 py-4 px-4">
+                        <Form>
+                            <Form.Item>
+                                <Input type="text"/>
+                            </Form.Item>
+                            <Form.Item>
+                                <Input type="text"/>
+                            </Form.Item>
+                            <Form.Item>
+                                <div className="flex justify-between ">
+                                    <p>Seat(s)</p>
+                                    <p>{colorSeat.seatNo != 0 ? colorSeat.seatNo:null}</p>
+                                </div>
+                            </Form.Item>
+                            <Form.Item>
+                                <div className="flex justify-between ">
+                                    <p>Base Fare</p>
+                                    <p>0.00</p>
+                                </div>
+                            </Form.Item>
+                            <Form.Item>
+                                <div className="flex justify-between ">
+                                    <p>GST</p>
+                                    <p>0.00</p>
+                                </div>
+                            </Form.Item>
+                            <div className="flex justify-center">
+                                <Button className="bg-orange-500 text-white">Complete / Book 0 Seat</Button>
+                            </div>
+                        </Form>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -376,8 +443,8 @@ const AvilableRoute = () => {
                                 </span>
                             </div>
                             {/* {selectedBus && <SelectedSeatData onClose={clearSelectedBus} />} */}
-                            {/* {selectedBus === busItem && <SelectedSeatData onClose={clearSelectedBus} />} */}
-                            <SelectedSeatData onClose={clearSelectedBus} />
+                            {selectedBus === busItem && <SelectedSeatData onClose={clearSelectedBus} />}
+                            {/* <SelectedSeatData onClose={clearSelectedBus} /> */}
                         </>
                         )
                     }
