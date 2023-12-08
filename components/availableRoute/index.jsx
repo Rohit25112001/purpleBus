@@ -1,5 +1,5 @@
 import HomeLayout from "../shared/layout/homeLayout";
-import { Button, Checkbox, Popover } from 'antd';
+import { Button, Checkbox, Popover, Image } from 'antd';
 import { useEffect, useState } from "react";
 
 const FilterMenu = [
@@ -135,6 +135,7 @@ const busList = [
 ]
 
 const AvilableRoute = () => {
+    // const [selectedBus , setSelectedBus] = useState();
     const [filter,setFilter] = useState(false);
     //filter option key
     const [filtered,setFiltered] = useState([]);
@@ -174,8 +175,119 @@ const AvilableRoute = () => {
         )
     }
 
+    //seat icon
+        const SVGICON = ({maxHeight}) =>{
+        return(
+            <svg style={{ maxHeight: maxHeight }} version="1.0" xmlns="http://www.w3.org/2000/svg" width="33.000000pt" height="20.000000pt" viewBox="0 0 33.000000 35.000000" preserveAspectRatio="xMidYMid meet">
+            <g transform="translate(0.000000,35.000000) scale(0.100000,-0.100000)" fill="none" stroke="none">
+              <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="15" fill="#000">
+                New Text
+              </text>
+              <path
+                d="M120 305 c0 -11 -11 -15 -38 -15 -64 0 -82 -26 -82 -120 0 -94 18 -120 82 -120 27 0 38 -4 38 -15 0 -12 18 -15 100 -15 l100 0 0 150 0 150 -100 0 c-82 0 -100 -3 -100 -15z m3 -45 c4 -17 14 -20 66 -20 l61 0 0 -70 0 -70 -61 0 c-52 0 -62 -3 -66 -20 -7 -27 -66 -27 -93 0 -16 16 -20 33 -20 90 0 83 18 110 74 110 25 0 35 -5 39 -20z"
+                style={{ stroke: "#000", fill: "#fff", strokeWidth: 5 }}
+              />
+              
+              <text x="380%" y="-380%" transform="scale(-1, 1) rotate(180)" textAnchor="middle" fontSize="100" fill="#000">
+                27
+              </text>
+            </g>
+          </svg>
+
+
+            )
+        }
+
+    const [selectedBus, setSelectedBus] = useState(null); // select bus
+    const SelectedBus =(e)=>{
+        console.log(e);
+    }
+
+    const handleSelectBus = (busItem) => {
+        setSelectedBus(busItem);
+        console.log(busItem);
+      };
+    
+      const clearSelectedBus = () => {
+        setSelectedBus(null);
+      };
+      
+      //selected bus component
+      const SelectedSeatData = () =>{
+        return(
+            <div  className='grid grid-cols-12 border-t border-zinc-500 '>
+                <div className="col-span-1 border-r border-zinc-500 text-center flex flex-col justify-center items-center px-2 py-4 pb-8 gap-4">
+                    <h1>SEAT LEGEND</h1>
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="mb-1">Available Seats</p>
+                        <span style={{width:'70px',height:'25px',display:'block'}} className="border border-zinc-500 rounded-full bg-white"></span>
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="mb-1">Booked Seats</p>
+                        <span style={{width:'70px',height:'25px',display:'block'}} className="border border-zinc-400 bg-gray-400 rounded-full"></span>
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="mb-1">Selected Seats</p>
+                        <span style={{width:'70px',height:'25px',display:'block'}} className="border border-zinc-400 bg-green-400 rounded-full"></span>
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="mb-1">Female Seats</p>
+                        <span style={{width:'70px',height:'25px',display:'block'}} className="border border-zinc-400 bg-pink-400 rounded-full"></span>
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="mb-1">Social Block Seats</p>
+                        <span style={{width:'70px',height:'25px',display:'block'}} className="border border-zinc-400 bg-yellow-200 rounded-full"></span>
+                    </div>
+                </div>
+
+                {/*main body*/}
+                <div className="col-span-8 px-8">
+
+                    <div className="flex py-3 border-b border-gray-400">
+                        <div className="w-[30%] border-r border-zinc-500">
+                            <h1 className="text-[18px]">26 Seats Available</h1>
+                            <p className="text-[#9CA3AF]">Click on Seat to select/ deselect</p>
+                        </div>
+                        <div className="w-[70%] flex items-center px-4 gap-2">
+                            <Image src="/Purple-Trips.png"/>
+                            <div className='text-[18px] font-bold pt-1 items-center flex px-1'>
+                                <span>PURPLE HELPDESK -</span>
+                                <span className='text-[22px] text-[#60489D] mx-1'>020 6718 6800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Button className="mt-12 bg-[#FCCA00]">Amenities</Button>
+                    <h1 className="text-[16px] text-[#444444] font-bold">LOWER DECK</h1>
+                    <div className="border border-zinc-500 w-[90%] h-[300px] grid grid-cols-12">
+                        <div className="col-span-1">
+                            <Image src="/iconsteering.png"/>
+                        </div>
+                        <div className="col-span-11">
+                            <div className="h-[40px] bg-red-500 ">
+                            {
+                                Array(10).fill().map((item,index)=> 
+                                index<=5 ? <SVGICON maxHeight="40px"/> :'hello'
+                                )
+                            }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/*contact from*/}
+                <div className="col-span-3 bg-blue-500">rjb</div>
+            </div>
+        )
+    }
+
+
     return(
         <HomeLayout>
+            <div className="px-10">
+                <SVGICON/>
+            </div>
             {/* <Popover content={content} title="Title">
                     <Button type="primary">Hover me</Button>
                 </Popover> */}
@@ -227,39 +339,46 @@ const AvilableRoute = () => {
                     </div>
                     {
                         busList.map((busItem,busIdex)=>
-                        <div className="flex items-center bg-[#F4EBFE] hover:bg-yellow-100 
-                        transition duration-300 ease-in-out grid grid-cols-12 border-t border-zinc-600">
-                            <span className="col-span-2 p-2">
-                                <h1>{busItem.label}</h1>
-                                <p className="text-zinc-500 text-xs py-1">{busItem.busFeature}</p>
-                                <Popover content={Contents} title="Amenities">
-                                    <div className="flex gap-1 pt-1" onMouseEnter={() => handleHover(busItem?.facility.map(item => item.label).join(', '))}>
-                                        {busItem &&
-                                        busItem.facility.map((iconItem, iconIndex) => (
-                                            <i key={iconIndex} className={`text-zinc-500 text-[16px] bx bx-${iconItem.icon}`} />
-                                        ))}
-                                    </div>
-                                </Popover>
-                            </span>
-                            <span className="col-span-2 p-2">
-                                {busItem.departure}
-                                <p className="text-zinc-500 text-xs font-bold">Boarding</p>
-                            </span>
-                            <span className="col-span-2 p-2">
-                                {busItem.arrival}
-                                <p className="text-zinc-500 text-xs font-bold">Dropping</p>
-                            </span>
-                            <span className="col-span-2 p-2">
-                                {busItem.seat}
-                                <p className="text-zinc-500">Left</p>
-                            </span>
-                            <span className="col-span-2 p-2 flex gap-1">
-                            <p className="font-bold">Seating Rs</p>{busItem.price}
-                            </span>
-                            <span className="col-span-2 p-2">
-                                <Button className="bg-[#60489D] rounded-0 text-white hover:bg-orange-400">Select Seat</Button>
-                            </span>
-                        </div>
+                        <>
+                            <div className="flex items-center bg-[#F4EBFE] hover:bg-yellow-100 
+                                transition duration-300 ease-in-out grid grid-cols-12 border-t border-zinc-600">
+                                <span className="col-span-2 p-2">
+                                    <h1>{busItem.label}</h1>
+                                    <p className="text-zinc-500 text-xs py-1">{busItem.busFeature}</p>
+                                    <Popover content={Contents} title="Amenities">
+                                        <div className="flex gap-1 pt-1" onMouseEnter={() => handleHover(busItem?.facility.map(item => item.label).join(', '))}>
+                                            {busItem &&
+                                            busItem.facility.map((iconItem, iconIndex) => (
+                                                <i key={iconIndex} className={`text-zinc-500 text-[16px] bx bx-${iconItem.icon}`} />
+                                            ))}
+                                        </div>
+                                    </Popover>
+                                </span>
+                                <span className="col-span-2 p-2">
+                                    {busItem.departure}
+                                    <p className="text-zinc-500 text-xs font-bold">Boarding</p>
+                                </span>
+                                <span className="col-span-2 p-2">
+                                    {busItem.arrival}
+                                    <p className="text-zinc-500 text-xs font-bold">Dropping</p>
+                                </span>
+                                <span className="col-span-2 p-2">
+                                    {busItem.seat}
+                                    <p className="text-zinc-500">Left</p>
+                                </span>
+                                <span className="col-span-2 p-2 flex gap-1">
+                                <p className="font-bold">Seating Rs</p>{busItem.price}
+                                </span>
+                                <span className="col-span-2 p-2">
+                                    <Button onClick={() => handleSelectBus(busItem)} className="bg-[#60489D] rounded-0 text-white hover:bg-orange-400">
+                                        Select Seat
+                                    </Button>
+                                </span>
+                            </div>
+                            {/* {selectedBus && <SelectedSeatData onClose={clearSelectedBus} />} */}
+                            {/* {selectedBus === busItem && <SelectedSeatData onClose={clearSelectedBus} />} */}
+                            <SelectedSeatData onClose={clearSelectedBus} />
+                        </>
                         )
                     }
                 </div>
