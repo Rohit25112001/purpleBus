@@ -1,6 +1,10 @@
 import HomeLayout from "../shared/layout/homeLayout";
-import { Button, Checkbox, Popover, Image, Form, Input } from 'antd';
+import { Button, Checkbox, Popover, Image, Form, Input, Select } from 'antd';
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import useSWR from 'swr';
+import axios from 'axios';
+const jwt = require('jsonwebtoken');
 
 const FilterMenu = [
     {
@@ -135,14 +139,11 @@ const busList = [
 ]
 
 const AvilableRoute = () => {
+    const router = useRouter();
     // const [selectedBus , setSelectedBus] = useState();
     const [filter,setFilter] = useState(false);
     //filter option key
     const [filtered,setFiltered] = useState([]);
-    
-    useEffect(()=>{
-        console.log(filtered);
-    },[filtered])
     
     const onChange = (e,filteredItem) => {
         const checked = e.target.checked;
@@ -160,9 +161,10 @@ const AvilableRoute = () => {
 
     //popover code & menu
     const [popoverContent, setPopoverContent] = useState(null);
-    const handleHover = (facilityLabel) => {
-        setPopoverContent(facilityLabel);
-    };
+
+    // const handleHover = (facilityLabel) => {
+    //     setPopoverContent(facilityLabel);
+    // };
 
     const Contents = () =>{
         const List = popoverContent.split(',');
@@ -178,13 +180,19 @@ const AvilableRoute = () => {
     
 
     const [selectedBus, setSelectedBus] = useState(null); // select bus
-    const SelectedBus =(e)=>{
-        console.log(e);
-    }
+
+    // const SelectedBus =(e)=>{
+    //     console.log(e);
+    // }
 
     const handleSelectBus = (busItem) => {
         setSelectedBus(busItem);
-        console.log(busItem);
+        setColorSeat({
+            selectedSeat:[],
+            seatNo:0,
+            price:0,
+            gst:0
+        })
       };
     
       const clearSelectedBus = () => {
@@ -195,17 +203,20 @@ const AvilableRoute = () => {
       //seat icon
       const [colorSeat,setColorSeat] = useState({
         selectedSeat:[],
-        seatNo:0
+        seatNo:0,
+        price:0,
+        gst:0
       });
     //   const [selected,setColorSeat] = useState(0);
-      const SVGICON = ({data,onClick}) =>{
+      const SVGICON = ({data,onClick,selectedSeat}) =>{
+        const isSelected = selectedSeat.includes(data);
       return(
           <Popover content = {<div>
               <h1>Seat No - {data}</h1>
               <h1>Base Fare - 2000</h1>
               <h1>GST - 100</h1>
               <h1>Seat Rate - 2100</h1>
-              <h1>Seat Status - Available</h1>
+              <h1>Seat Status - {isSelected ? 'Selected':'Available'}</h1>
           </div> } 
           title="Seat Information">
 
@@ -213,7 +224,7 @@ const AvilableRoute = () => {
               <g transform="translate(0.000000,35.000000) scale(0.100000,-0.100000)" fill="none" stroke="none">
               <path
                   d="M120 305 c0 -11 -11 -15 -38 -15 -64 0 -82 -26 -82 -120 0 -94 18 -120 82 -120 27 0 38 -4 38 -15 0 -12 18 -15 100 -15 l100 0 0 150 0 150 -100 0 c-82 0 -100 -3 -100 -15z m3 -45 c4 -17 14 -20 66 -20 l61 0 0 -70 0 -70 -61 0 c-52 0 -62 -3 -66 -20 -7 -27 -66 -27 -93 0 -16 16 -20 33 -20 90 0 83 18 110 74 110 25 0 35 -5 39 -20z"
-                  style={{ stroke: "#000", fill: `${colorSeat.seatNo == data ? "green":'#fff'}`, strokeWidth: 5 }}
+                  style={{ stroke: "#000", fill: `${ isSelected ? "green" : '#fff'}`, strokeWidth: 5 }}
               />
               
               <text x="380%" y="-380%" transform="scale(-1, 1) rotate(180)" textAnchor="middle" fontSize="100" fill="#000">
@@ -227,15 +238,84 @@ const AvilableRoute = () => {
           )
       }
 
+
       const selectSeats = (e) =>{
+        if(colorSeat.selectedSeat.length>=10)return alert("can't select seat more then 10");
+        if (colorSeat.selectedSeat.includes(e)){
+            const updateSeat = colorSeat.selectedSeat.filter(seat=>seat!==e);
+            return setColorSeat((prevSeat)=>({
+                ...prevSeat,
+                selectedSeat:updateSeat,
+                seatNo:0,
+                price:colorSeat.price-2000,
+                gst:colorSeat.gst-101
+            }))
+        }
+        
           setColorSeat({
-            seatNo:e
+            selectedSeat:[
+                ...colorSeat.selectedSeat,
+                e
+            ],
+            seatNo:e,
+            price:colorSeat.price+2000,
+            gst:colorSeat.gst+101
           })
-          console.log(e);
       }
+
+      const options=[
+        {
+            value: 'Mumbai',
+            label: 'Mumbai',
+        },
+        {
+            value: 'Delhi',
+            label: 'Delhi',
+        },
+        {
+            value: 'Tamil Nadu',
+            label: 'Tamil Nadu',
+        },
+        {
+            value: 'Goa',
+            label: 'Goa',
+        },
+        {
+            value: 'Karnatka',
+            label: 'Karnatka',
+        },
+        {
+            value: 'Chennai',
+            label: 'Chennai',
+        },
+        {
+            value: 'Agra',
+            label: 'Agra',
+        }
+    ]
+
+        const proceedBooking = (e) => {
+            
+            // const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
+            e['selectedSeat'] = colorSeat.selectedSeat.toString();
+            e['price'] = colorSeat.price;
+            e['gst'] = colorSeat.gst;
+            const data = JSON.stringify(e);
+            router.push({
+                pathname: '/Customer_info',
+                query: { data: data },
+            })
+            // const secretKey = '2iere2gedewgfty2'; // Confirm this is a valid string
+
+            // const token = jwt.sign({
+            // name: 'Rohit',
+            // test: 'test'
+            // }, secretKey, { expiresIn: '7d' });
+            // console.log(token);
+        }
       
       //selected bus component
-      const SelectedSeatData = () =>{
+      const SelectedSeatData = ({data}) =>{
         return(
             <div  className='grid grid-cols-12 border-t border-zinc-500 '>
                 <div className="col-span-1 border-r border-zinc-500 text-center flex flex-col justify-center items-center px-2 py-4 pb-8 gap-4">
@@ -271,7 +351,7 @@ const AvilableRoute = () => {
                             <p className="text-[#9CA3AF]">Click on Seat to select/ deselect</p>
                         </div>
                         <div className="w-[70%] flex items-center px-4 gap-2">
-                            <Image src="/Purple-Trips.png"/>
+                            <Image src="/Purple-Trips.png" preview={false}/>
                             <div className='text-[18px] font-bold pt-1 items-center flex px-1'>
                                 <span>PURPLE HELPDESK -</span>
                                 <span className='text-[22px] text-[#60489D] mx-1'>020 6718 6800</span>
@@ -285,23 +365,35 @@ const AvilableRoute = () => {
                         <div className="col-span-1">
                             <Image src="/iconsteering.png"/>
                         </div>
+                        
                         <div className="col-span-11">
                         
                             <div className=" flex flex-wrap flex-col justify-center  h-[60px] w-[300px] ">
                                 {
-                                    Array(14).fill().map((item,index)=> 
-                                        <SVGICON  data={index+1} onClick={selectSeats}/>
-                                    )
+                                    (data.totalSeat/2)%2== 0 ? 
+                                        Array((data.totalSeat/2)+2).fill().map((item,index)=> 
+                                            <SVGICON  data={index+1} onClick={selectSeats} selectedSeat={colorSeat.selectedSeat}/>
+                                        )
+                                    : 
+                                    Array(Math.round((data.totalSeat/2))+1).fill().map((item,index)=> 
+                                            <SVGICON  data={index+1} onClick={selectSeats} selectedSeat={colorSeat.selectedSeat}/>
+                                        )
                                 }
                             </div>
 
 
                             <div className="pl-10 my-8 flex flex-wrap flex-col justify-center  h-[60px] w-[300px] ">
+                                {console.log(19/2)}
                             {
-                                Array(12).fill().map((item,index)=> 
-                                    <SVGICON data={index+15} onClick={selectSeats}/>
-                                )
-                            }
+                                    (data.totalSeat/2)%2== 0 ? 
+                                        Array((data.totalSeat/2)-2).fill().map((item,index)=> 
+                                            <SVGICON  data={index+((data.totalSeat/2)+3)} onClick={selectSeats} selectedSeat={colorSeat.selectedSeat}/>
+                                        )
+                                    : 
+                                    Array(Math.round((data.totalSeat/2))-3).fill().map((item,index)=> 
+                                            <SVGICON  data={(index+Math.round((data.totalSeat)/2))+3} onClick={selectSeats} selectedSeat={colorSeat.selectedSeat}/>
+                                        )
+                                }
                             </div>
                         </div>
                     </div>
@@ -311,36 +403,66 @@ const AvilableRoute = () => {
                 {/*contact from*/}
                 <div className="col-span-3 py-7 px-3">
                     <div>
-                        <Image src="/form-top.png"/>
+                        <Image src="/form-top.png" preview={false}/>
                     </div>
                     <div className="border border-zinc-500 py-4 px-4">
-                        <Form>
-                            <Form.Item>
-                                <Input type="text"/>
+                        <Form onFinish={proceedBooking}>
+                        <Form.Item
+                                name="boardingPoint"
+                                rules={[
+                                {
+                                    required: true,
+                                    message: 'Please select a Boarding Point!',
+                                },
+                                ]}
+                            >
+                                <Select
+                                className="w-full h-[40px]"
+                                placeholder="Boarding Point"
+                                options={options}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="droppingPoint"
+                                rules={[
+                                {
+                                    required: true,
+                                    message: 'Please select a Dropping Point!',
+                                },
+                                ]}
+                            >
+                                <Select
+                                className="w-full h-[40px]"
+                                placeholder="Dropping Point"
+                                options={options}
+                                />
                             </Form.Item>
                             <Form.Item>
-                                <Input type="text"/>
-                            </Form.Item>
-                            <Form.Item>
-                                <div className="flex justify-between ">
-                                    <p>Seat(s)</p>
-                                    <p>{colorSeat.seatNo != 0 ? colorSeat.seatNo:null}</p>
-                                </div>
-                            </Form.Item>
-                            <Form.Item>
-                                <div className="flex justify-between ">
-                                    <p>Base Fare</p>
-                                    <p>0.00</p>
-                                </div>
-                            </Form.Item>
-                            <Form.Item>
-                                <div className="flex justify-between ">
-                                    <p>GST</p>
-                                    <p>0.00</p>
+                                <div className="flex flex-col justify-between ">
+                                    <span className="flex justify-between pb-1">
+                                        <p>Seat(s)</p>
+                                        <p>
+                                            {
+                                                colorSeat.selectedSeat.map(seat => seat).join(', ')
+                                            }
+                                        </p>
+                                    </span>
+                                    <span className="flex justify-between pb-1">
+                                        <p>Base Fare</p>
+                                        <p>{colorSeat.price}</p>
+                                    </span>
+                                    <span className="flex justify-between pb-1">
+                                        <p>GST</p>
+                                        <p>{colorSeat.gst}</p>
+                                    </span>
+                                    <span className="flex justify-between text-[16px] font-semibold">
+                                        <h1>Total Price</h1>
+                                        <p className="flex items-center"><i className='bx bx-rupee'/>{colorSeat.price}</p>
+                                    </span>
                                 </div>
                             </Form.Item>
                             <div className="flex justify-center">
-                                <Button className="bg-orange-500 text-white">Complete / Book 0 Seat</Button>
+                                <Button htmlType="submit" className="bg-orange-500 text-white">Complete / Book 0 Seat</Button>
                             </div>
                         </Form>
                     </div>
@@ -349,19 +471,37 @@ const AvilableRoute = () => {
         )
     }
 
+    const fetcher = async(url) =>{
+        try{
+            const {data} = await axios.get(url);
+            return data;
+        }
+        catch(err){
+            return err;
+        }
+      }
 
+      //Bus lIst fetch
+    const {data:BusList,isLoading,error:productsError} = useSWR('http://localhost:8080/bus/',fetcher);
+    
     return(
         <HomeLayout>
-            <div className="px-10">
-                <SVGICON/>
-            </div>
-            {/* <Popover content={content} title="Title">
-                    <Button type="primary">Hover me</Button>
-                </Popover> */}
             <div className="px-11">
                 <div className="h-[124px] flex flex-col justify-center px-8" style={{backgroundImage:'url(/location-img.jpg)'}}>
-                    <h1 className="font-bold  text-[25px]">PUNE - TRIP-M-HIWAREBAZAR</h1>
-                    <span className="text-[16px]">10-12-2023</span>
+                    {
+                        (BusList && BusList.length) ?
+                            <div>
+                                <h1 className="font-bold  text-[25px]">{BusList[0].originCity} - {BusList[0].destinationCity}</h1>
+                                <span className="text-[16px]">{BusList[0].dateofDeparture.split('T')[0]}</span>
+                                {/* BusList[0].originCity + ' - ' + BusList[0].destinationCity */}
+                            </div>
+                        :null
+                        // BusList.map((busItem,busIndex)=>
+                        // <>
+                        //     <h1 className="font-bold  text-[25px]">{busItem.originCity} - {busItem.destinationCity}</h1>
+                        //     <span className="text-[16px]">{busItem.dateofDeparture.split('T')[0]}</span>
+                        // </>):console.log(BusList)
+                    }
                 </div>
                 <div></div>
             </div>
@@ -405,36 +545,40 @@ const AvilableRoute = () => {
                         <span className="col-span-2 p-2">Select</span>
                     </div>
                     {
-                        busList.map((busItem,busIdex)=>
+                        (BusList && BusList.length) ? BusList.map((busItem,busIdex)=>
                         <>
                             <div className="flex items-center bg-[#F4EBFE] hover:bg-yellow-100 
                                 transition duration-300 ease-in-out grid grid-cols-12 border-t border-zinc-600">
                                 <span className="col-span-2 p-2">
-                                    <h1>{busItem.label}</h1>
+                                    <h1>{busItem.busName}</h1>
                                     <p className="text-zinc-500 text-xs py-1">{busItem.busFeature}</p>
-                                    <Popover content={Contents} title="Amenities">
+                                    {/* <Popover content={Contents} title="Amenities">
                                         <div className="flex gap-1 pt-1" onMouseEnter={() => handleHover(busItem?.facility.map(item => item.label).join(', '))}>
                                             {busItem &&
                                             busItem.facility.map((iconItem, iconIndex) => (
                                                 <i key={iconIndex} className={`text-zinc-500 text-[16px] bx bx-${iconItem.icon}`} />
                                             ))}
                                         </div>
-                                    </Popover>
+                                    </Popover> */}
                                 </span>
                                 <span className="col-span-2 p-2">
-                                    {busItem.departure}
+                                    {
+                                         busItem.timeofDropping && (busItem.timeofBoarding.split('T')[1].split('.')[0])
+                                    }
                                     <p className="text-zinc-500 text-xs font-bold">Boarding</p>
                                 </span>
                                 <span className="col-span-2 p-2">
-                                    {busItem.arrival}
+                                    {
+                                        busItem.timeofDropping && (busItem.timeofDropping.split('T')[1].split('.')[0])
+                                    }
                                     <p className="text-zinc-500 text-xs font-bold">Dropping</p>
                                 </span>
                                 <span className="col-span-2 p-2">
-                                    {busItem.seat}
+                                    {busItem.totalseatLeft}
                                     <p className="text-zinc-500">Left</p>
                                 </span>
                                 <span className="col-span-2 p-2 flex gap-1">
-                                <p className="font-bold">Seating Rs</p>{busItem.price}
+                                <p className="font-bold">Seating Rs</p>{busItem.perSeatPrice}
                                 </span>
                                 <span className="col-span-2 p-2">
                                     <Button onClick={() => handleSelectBus(busItem)} className="bg-[#60489D] rounded-0 text-white hover:bg-orange-400">
@@ -442,11 +586,13 @@ const AvilableRoute = () => {
                                     </Button>
                                 </span>
                             </div>
-                            {/* {selectedBus && <SelectedSeatData onClose={clearSelectedBus} />} */}
-                            {selectedBus === busItem && <SelectedSeatData onClose={clearSelectedBus} />}
-                            {/* <SelectedSeatData onClose={clearSelectedBus} /> */}
+                            {selectedBus === busItem && <SelectedSeatData data={busItem} onClose={clearSelectedBus} />}
                         </>
-                        )
+                        ) :
+                        <div className="flex items-center justify-center bg-[#F4EBFE] hover:bg-yellow-100 
+                                transition duration-300 ease-in-out font-bold border-t border-zinc-600">
+                                    <h1 className="py-2">No Routing Found</h1> 
+                        </div>
                     }
                 </div>
             </div>

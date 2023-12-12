@@ -44,7 +44,8 @@ const addProduct = ()=>{
     const [productObejct,setproductObject] = useState([]); // all product stored here
     const addProductForm = async(e)=>{
         const formData=e;
-        formData['totalSeat']=10,
+        // formData['totalSeat']=10;
+        console.log(formData);
         setisLoading(!isLoading);
         try{
             if(updateData!==null){
@@ -59,7 +60,7 @@ const addProduct = ()=>{
 
             else{
                 const {data} = await axios.post('http://localhost:8080/bus',formData);
-                messageApi.success('Product successfully added');
+                messageApi.success('Bus successfully added');
                 if(data){
                     return setproductObject((oldData)=>{
                         return[
@@ -197,9 +198,10 @@ const addProduct = ()=>{
     ]
 
 
-    const onChange = (time, timeString) => {
-        form.setFieldsValue({ 'timeOfDeparture': timeString });
-      };
+    // const onChange = (time, timeString) => {
+    //     form.setFieldsValue({ 'timeOfDeparture': timeString });
+    //     console.log(timeString);
+    //   };
 
       const handleChange = (e,option) => {
         form.setFieldsValue({ [option]: e });
@@ -225,7 +227,7 @@ const addProduct = ()=>{
             if(deleteData){
                 const updatedProductObject = productObejct.filter((item, index) => index !== productDetail.index);
                 setproductObject(updatedProductObject);
-                messageApi.success('Product deleted successfully !');
+                messageApi.success('Bus deleted successfully !');
             }
         }
         catch(err){
@@ -276,19 +278,23 @@ const addProduct = ()=>{
                     </div>
 
                     <div className='flex gap-4'>
-                        <Form.Item name="totalSeatLeft">
+                        <Form.Item name="totalSeat">
                             <Input type='Number' placeholder="Total Sheat" className="py-2" />
                         </Form.Item>
                         <Form.Item name="perSeatPrice">
                             <Input type='number' placeholder="Per Seat Price" className="py-2" />
                         </Form.Item>
                     </div>
-                    <div className='flex gap-4'>
-                        <Form.Item name="timeOfDeparture">
-                        <Form.Item wrap>
-                            <TimePicker className="py-2" use12Hours format="h:mm:ss A" onChange={onChange} />
-                        </Form.Item>
-                        </Form.Item>
+                    <div className='flex gap-5'>
+                            <Form.Item wrap name='timeofBoarding'>
+                                <TimePicker className="py-2" use12Hours format="h:mm:ss A" />
+                            </Form.Item>
+
+                            <Form.Item wrap name='timeofDropping'>
+                                <TimePicker className="py-2" use12Hours format="h:mm:ss A" />
+                            </Form.Item>
+                    </div>
+                    <div>
                         <Form.Item name="dateofDeparture">
                             <Input type='date' placeholder="Date Of Departure" className="py-2" />
                         </Form.Item>
