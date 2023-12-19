@@ -35,7 +35,7 @@ const formField = [
 const Customer = () => {
     const router = useRouter();
     const pay = async() =>{
-        const response = await axios.post('http://localhost:8080/phonepay',data)
+        const response = await axios.post('http://localhost:8080/auth/phonepe',data)
         const redirectUrl = response.data.instrumentResponse.redirectInfo.url;
         router.push(redirectUrl)
     }
@@ -58,11 +58,19 @@ const Customer = () => {
 
     const test = async (e) =>{
         e['price']=receivedData.price;
+        e.totalSeat = selectedSeat.length;
         console.log(e);
-        const response = await axios.post('http://localhost:8080/phonepay',e)
+        const response = await axios.post('http://localhost:8080/auth/phonepe',e)
         const redirectUrl = response.data.instrumentResponse.redirectInfo.url;
         router.push(redirectUrl)
+        passangerInfo();
     }
+
+    const passangerInfo = (e) =>{
+        console.log(e);
+    }
+    
+    const couponRedeem = () =>{}
 
     return(
         <HomeLayout>
@@ -116,7 +124,9 @@ const Customer = () => {
                             <div className="flex flex-col">
                                 {
                                     selectedSeat.map((items,index)=>
+                                    <Form onFinish={passangerInfo}>
                                        <div className="flex gap-2  justify-between">
+                                        
                                             {
                                                 formField.map((formFieldItem,index) =>{
                                                     return <Form.Item name={formFieldItem.label}>
@@ -130,6 +140,7 @@ const Customer = () => {
                                                 )
                                             }
                                        </div>
+                                       </Form>
                                     )
                                 }
                         </div>
@@ -142,7 +153,7 @@ const Customer = () => {
                             <i class='bx bxs-user-circle text-[35px]'/>
                             <label className="text-[15px]">PRIMARY PASSANGER <span className="text-red-500">*</span></label>
                         </span>
-                        <Form.Item name="primaryPassanger"
+                        <Form.Item name="fullname"
                         >
                             <Input name="primaryPassanger" className="w-[500px]"
                             />
@@ -153,25 +164,23 @@ const Customer = () => {
                             <i class='bx bx-envelope text-[35px]'/>
                             <label className="text-[15px]">CONTACT DETAILS <span className="text-red-500">*</span><span className="mx-1">Your Ticket Will Be Sent To These Details</span></label>
                         </span>
-                        <Form.Item name="contactDetail" className="flex-col flex"
-                        >
-                            <Input className="w-[500px]" 
-                            />
-                            <br/>
+                        <Form.Item name="email" className="flex-col flex">
+                            <Input className="w-[500px]"/>
+                            {/* <br/>
                             <div className="pt-2">
                                 <input type='checkbox' className="mx-1"/>GST Details
-                            </div>
+                            </div> */}
                         </Form.Item>
                     </div>
                     <div className="col-span-6 flex flex-col justify-center px-2">
+                    <Form.Item name='mobile' className="pt-4">
                         <span className="flex pt-3">
                         {/* items-center justify-center gap-1 py-2 */}
-                            <Form.Item name='mobile'
-                            >
-                                <label className="bg-white p-2 rounded">+91</label> <Input className="w-[500px]"
-                                />
-                            </Form.Item>
+                            
+                                <label className="bg-white p-2 rounded bg-[#ddd] mx-1">+91</label>
+                                <Input className="w-[500px]"/>
                         </span>
+                        </Form.Item>
                     </div>
                 </div>
 
@@ -182,14 +191,16 @@ const Customer = () => {
                         </div>
                         <p className="text-red-500 pl-8 py-2 text-xs">Please Note: You can either use the Coupon Code Or Wallet to avail Discount/Cashback.</p>
                         <div className="px-8">
-                            <label>Coupon Code Discount</label>
-                            <div className="flex gap-6">
-                                <input type='checkbox' /> <Input/> <Button className='bg-orange-500 h-auto px-9'>Redeem</Button>
-                            </div>
-                            <label>Coupon Code Discount</label>
-                            <div className="flex gap-6">
-                                <input type='checkbox' /><Input/> <Button className='bg-orange-500 h-auto px-4'>Generate OTP</Button>
-                            </div>
+                            <Form onFinish={couponRedeem}>
+                                <label>Coupon Code Discount</label>
+                                <Form.Item name='coupon' className="flex gap-6">
+                                    <input type='checkbox' /> <Input/> <Button htmlType="couponfun" className='bg-orange-500 h-auto px-9'>Redeem</Button>
+                                </Form.Item>
+                                <label>Coupon Code Discount</label>
+                                <Form.Item name='wallet' className="flex gap-6">
+                                    <input type='checkbox' /><Input/> <Button htmlType="walletfun" className='bg-orange-500 h-auto px-4'>Generate OTP</Button>
+                                </Form.Item>
+                            </Form>
                         </div>
                     </div>
 

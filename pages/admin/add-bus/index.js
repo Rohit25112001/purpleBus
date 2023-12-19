@@ -1,2 +1,2 @@
-import addRoute from "@/components/admin/add-route-subheading/add-route";
-export default addRoute;
+import addBus from "@/components/admin/add-bus-subheading/add-route";
+export default addBus;
